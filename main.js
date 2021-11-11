@@ -1,4 +1,7 @@
 // TODO importa því sem nota þarf
+import { fetchNews, NEWS_API } from './lib/news.js';
+import { createCategoryBackLink, fetchAndRenderCategory, fetchAndRenderLists } from './lib/ui.js';
+import { empty, el } from './lib/helpers.js';
 
 /** Fjöldi frétta til að birta á forsíðu */
 const CATEGORY_ITEMS_ON_FRONTPAGE = 5;
@@ -13,6 +16,17 @@ const main = document.querySelector('main');
  */
 function route() {
   // Athugum hvort það sé verið að biðja um category í URL, t.d.
+  const stadsetning = new URLSearchParams(window.location.search);
+  const nystadsetning = stadsetning.get('category');
+
+  if (nystadsetning) {
+    const backlink = createCategoryBackLink(main, CATEGORY_ITEMS_ON_FRONTPAGE);
+
+    fetchAndRenderCategory(nystadsetning, main, backlink);
+  } else {
+    fetchAndRenderLists(main, CATEGORY_ITEMS_ON_FRONTPAGE);
+  }
+  
   // /?category=menning
 
   // Ef svo er, birtum fréttir fyrir þann flokk
@@ -26,6 +40,8 @@ function route() {
  */
 window.onpopstate = () => {
   // TODO útfæra
+  empty(main);
+  route();
 };
 
 // Í fyrsta skipti sem vefur er opnaður birtum við það sem beðið er um út frá URL
